@@ -1411,7 +1411,7 @@ acting as a no-op if the movement would produce an error."
 ;; prints all registered instructions on loading ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(printf "\nRegistered instructions: %s\n\n" @registered-instructions)
+;(printf "\nRegistered instructions: %s\n\n" @registered-instructions)
 (flush)
 
 ;; also set default value for atom-generators
