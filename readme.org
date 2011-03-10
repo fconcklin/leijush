@@ -1,10 +1,10 @@
 # leijush
 
-FIXME: write description
+This is Clojush using lein.
 
 ** Usage
 
-FIXME: write
+coming soon. 
 
 ** License
 
