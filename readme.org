@@ -6,6 +6,10 @@ This is Clojush using lein.
 
 coming soon. 
 
+git clone git@github.com:fconcklin/leijush.git
+cd leijush
+lein deps
+
 ** License
 
 Copyright (C) 2010 FIXME

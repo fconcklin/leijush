@@ -1,4 +1,4 @@
-;; clojush.clj
+;; core.clj
 ;;
 ;; This file implements a version of the Push programming language and the PushGP genetic
 ;; programming system in the Clojure programming language. See the accompanying README
@@ -11,18 +11,20 @@
 ;; Free Software Foundation, available from http://www.gnu.org/licenses/gpl.txt.
 ;;
 ;; This program is distributed in the hope that it will be useful, but WITHOUT ANY
-;; WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+;; WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FxOR A
 ;; PARTICULAR PURPOSE. See the GNU General Public License (http://www.gnu.org/licenses/)
 ;; for more details.
 
 (ns leijush.core
-  ^{:doc "This file implements a version of the Push programming language and the PushGP genetic programming system in the clojure programming language."
-    :author "Clojush written by Lee Spector. Leijush maintained by Fred Concklin"}
+ ;; ^{:doc "This file implements a version of the Push programming language and the PushGP genetic programming system in the clojure programming language."
+ ;;   :author "Clojush written by Lee Spector. Leijush maintained by Fred Concklin"}
   (:require [clojure.zip :as zip]
 	    [clojure.contrib.math :as math]
 	    [clojure.contrib.seq-utils :as seq-utils]
 	    [clojure.walk :as walk]
-	    [clojure.contrib.string :as string]))
+	    [clojure.contrib.string :as string])
+  (:gen-class))
+;  )
 
 (defn bt []
   "backtrace abbreviation, to ease debugging"
@@ -56,8 +58,10 @@
 (def global-node-selection-leaf-probability (atom 0.1))
 (def global-node-selection-tournament-size (atom 2))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; random code generator
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; random code generator ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def thread-local-random-generator (new java.util.Random))
 
@@ -1922,9 +1926,7 @@ elimination tournaments to reach the provided target-size."
   (apply pushgp (apply concat argmap)))
 
 
-;;;;;;;;;;;;;;;;;
-;; stress test ;;
-;;;;;;;;;;;;;;;;;
+;; stress test
 
 (defn stress-test
   "Performs a stress test of the registered instructions by generating and running n
@@ -1949,10 +1951,12 @@ of nil values in execute-instruction, do see if any instructions are introducing
 
 ;(stress-test 10000)
 
-(defn -main 
-  "A main function for clojush, which assumes that the first/only argument is the name
-  of a problem file that contains a top level call. Exits after completion of the call."
-  [& args]
-  (use (symbol (first args)))
-  (System/exit 0))
+;; (defn -main 
+;;   "A main function for clojush, which assumes that the first/only argument is the name
+;;   of a problem file that contains a top level call. Exits after completion of the call."
+;;   [& args]
+;;   (use (symbol (first args)))
+;;   (System/exit 0))
 
+(defn -main [& args]
+  (println "test of main"))
