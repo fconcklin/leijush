@@ -15,7 +15,8 @@
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.1"]]
   :min-lein-version "1.3.0"
-  :main leijush.core)
+  :main leijush.core
+  :aot [leijush.core])			; fix this? 
 
 
 ;; build in autodoc like here: https://github.com/weavejester/compojure/blob/master/project.clj
