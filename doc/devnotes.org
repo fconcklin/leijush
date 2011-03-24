@@ -1,0 +1,6 @@
+# dev notes for push
+* project.clj
+** build in autodoc like here:
+https://github.com/weavejester/compojure/blob/master/project.clj
+** required reading:
+https://github.com/technomancy/leiningen/commit/270cf1dec750d7a0ea6303651cb49e027c2c2af2
