@@ -32,7 +32,7 @@
   "returns list of players with payoff applied"
   [playerlist]
   (let [payoff (payoff-sum (get-decisions playerlist))]
-    (map #(apply-payoff payoff %) playerlist)))
+    (map #(apply-payoff payoff %) playerlist))) ;; update-in 
 
 ;;; for each struct, give it a payoff based on whether or not it entered in last round
 ;;; use merge-with a keyword
@@ -78,7 +78,7 @@
 (defn player-decide [player-struct]
   "returns player with decision in :choices key"
   ;; assoc player logic with choices keyword
-  (player-logic))
+  (player-logic))			; stack throw
 
 ;; (for [x (range 0 popsize)] ;; declist
 ;;   (player-decide x))

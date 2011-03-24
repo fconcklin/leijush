@@ -16,7 +16,7 @@
   :dev-dependencies [[swank-clojure "1.2.1"]
 		     [lein-clojars "0.6.0"]]
   :min-lein-version "1.5.0"
-  :main leijush.core
+  :main leijush.gp1
   ;; :aot [leijush.core]
   ;; :keep-non-project-classes true
   )
