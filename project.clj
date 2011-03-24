@@ -13,9 +13,10 @@
 		 :unsubscribe "https://lists.hampshire.edu/mailman/listinfo/push"}
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]]
-  :dev-dependencies [[swank-clojure "1.2.1"]]
+  :dev-dependencies [[swank-clojure "1.2.1"]
+		     [lein-clojars "0.6.0"]]
   :min-lein-version "1.5.0"
-  :main leijush.factorial
+  :main leijush.core
   ;; :aot [leijush.core]
   ;; :keep-non-project-classes true
   )

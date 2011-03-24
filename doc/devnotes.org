@@ -4,3 +4,17 @@
 https://github.com/weavejester/compojure/blob/master/project.clj
 ** required reading:
 https://github.com/technomancy/leiningen/commit/270cf1dec750d7a0ea6303651cb49e027c2c2af2
+* todo
+** commandline args for push
+* game 
+1 game 
+n rounds 
+for each round 
+  get decision
+  give payoff
+
+* g2
+** list of players
+** decide 
+** take all player decisions and put into list
+** put decisions into player structs 
