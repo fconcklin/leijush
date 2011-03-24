@@ -4,9 +4,7 @@
 	    [clojure.contrib.math :as math]
 	    [clojure.contrib.seq-utils :as seq-utils]
 	    [clojure.walk :as walk]
-	    [clojure.contrib.string :as string])
-  ) 
-
+	    [clojure.contrib.string :as string]))
 
 (defn bt []
   "backtrace abbreviation, to ease debugging"
@@ -1941,4 +1939,7 @@ of nil values in execute-instruction, do see if any instructions are introducing
 ;;   (System/exit 0))
 
 (defn -main [& args]
-  (println "test of main"))
+  (println "test of main")
+  (use (symbol (first args)))
+  (System/exit 0)
+  )

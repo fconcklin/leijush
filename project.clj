@@ -15,7 +15,7 @@
                  [org.clojure/clojure-contrib "1.2.0"]]
   :dev-dependencies [[swank-clojure "1.2.1"]]
   :min-lein-version "1.5.0"
-  :main leijush.core
+  :main leijush.factorial
   ;; :aot [leijush.core]
   ;; :keep-non-project-classes true
   )
