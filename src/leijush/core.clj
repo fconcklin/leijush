@@ -1,3 +1,6 @@
+;; todo
+;;; clj-cassandra
+
 (ns leijush.core
   (:gen-class)
   (:require [clojure.zip :as zip]
@@ -87,7 +90,6 @@ The order of the numbers is not random (you may want to shuffle it)."
   "Returns a random expression with size limited by max-points."
   [max-points atom-generators]
   (random-code-with-size (inc (lrand-int max-points)) atom-generators))
-
 
 ;;;;;;;;;;;;;;;
 ;; utilities ;;
@@ -1943,3 +1945,7 @@ of nil values in execute-instruction, do see if any instructions are introducing
   (use (symbol (first args)))
   (System/exit 0)
   )
+
+;; papers
+;; http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=350024
+;; http://www.springerlink.com/content/f5q4526300403127/

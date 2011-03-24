@@ -5,27 +5,21 @@
 (define-registered in 
   (fn [state] (push-item (stack-ref :auxiliary 0 state) :integer state)))
 
+;; http://techbehindtech.com/2010/06/25/parsing-xml-in-clojure/
+;; http://stackoverflow.com/questions/4641964/how-to-use-update-in-in-clojure
+;; above is update-in
+;; http://java.ociweb.com/mark/clojure/article.html
+;; martin kaiser - efficiently representing populations in genetic programming 
 ;; todo
 ;;; build in changing capacity [just mod total number of rounds or tmi?]
+;;; write struct alteration helper fn's 
+;;; apply-payoff, payoff-sum, get-decisions
+;;; build game around it
 
-(def popsize 10)
-(def rounds 5)
+(def *popsize* 10)
+(def *roundsnum* 5)
 
-;; (defn game
-;;   "returns player values for a game"
-;;   []
-;;   (for [a (range 1 rounds)]
-;;     )
-;;   )
-
-;; (defn round
-;;   "returns list of players with payoffs and choices for up to round"
-;;   [playerlist roundnum]
-;;   (put-payoff
-;;    (calculate-payoff
-;;     (get-decisions
-;;      (play-round roundnum)))
-;;    playerlist))
+(defstruct player :number :choices :payoffs)
 
 (defn rounds
   "returns list of players with payoffs and choices for rounds"
@@ -37,8 +31,7 @@
 (defn calculate-payoff
   "returns list of players with payoff applied"
   [playerlist]
-  (let [payoff (payoff-sum
-		(get-decisions playerlist))]
+  (let [payoff (payoff-sum (get-decisions playerlist))]
     (map #(apply-payoff payoff %) playerlist)))
 
 ;;; for each struct, give it a payoff based on whether or not it entered in last round
@@ -74,8 +67,6 @@
 (defn player-logic []
   "random player logic"
   (rand-int 2))
-
-(defstruct player :number :choices :payoffs)
 
 ;; this is also where push players will go
 (defn create-players [popsize]
@@ -117,3 +108,18 @@
 	 :population-size 5000
 	 :trivial-geography-radius 10)
 
+;; (defn game
+;;   "returns player values for a game"
+;;   []
+;;   (for [a (range 1 rounds)]
+;;     )
+;;   )
+
+;; (defn round
+;;   "returns list of players with payoffs and choices for up to round"
+;;   [playerlist roundnum]
+;;   (put-payoff
+;;    (calculate-payoff
+;;     (get-decisions
+;;      (play-round roundnum)))
+;;    playerlist))
