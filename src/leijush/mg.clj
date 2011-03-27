@@ -1,6 +1,5 @@
 (ns leijush.mg
-  (:require [leijush.core] [clojure.contrib.math])
-  (:use [leijush.core] [clojure.contrib.math]))
+  (:use [leijush.core] [clojure.contrib.math])) ; took out this line as require
 
 ;; (define-registered in 
 ;;   (fn [state] (push-item (stack-ref :auxiliary 0 state) :integer state)))
@@ -12,8 +11,6 @@
 ;; martin kaiser - efficiently representing populations in genetic programming 
 ;; todo
 ;;; build in changing capacity [just mod total number of rounds or tmi?]
-;;; write struct alteration helper fn's 
-;;; apply-payoff, payoff-sum, get-decisions
 ;;; build game around it
 
 (def *popsize* 10)
@@ -39,8 +36,7 @@
 (defn payoff-sum
   "sum the player decisions with proper weights"
   [decisions]
-  (apply + decisions)			; integrate weights 
-  )
+  (apply + decisions))			; integrate weights 
 
 (defn apply-payoff			
   "add the payoff to each player"
@@ -60,25 +56,18 @@
   (for [x (range 0 (inc popsize))]
 	(struct-map player :number x :choices [] :payoffs [])))
 
-;; has access to
-;;; past-decisions
-(defn player-logic []			; this is where push players will go 
+;;; this is where player logic is inserted
+;;; player decisions is a list of the player's past decisions
+;;; all-decisions is a list of all past decisions, including the player
+(defn player-logic [player-decisions all-decisions] 
   "random player logic"
   (rand-int 2))
-
-;; (defn player-decide2
-;;   "returns players with decision in :choices key"
-;;  [player-structs]
-;;  (let [past-decisions (get-all-decisions player-structs)]
-;;      (for [x (range 1 (count player-structs))]
-;;        (let [player-decisions (get-player-decisions x past-decisions)]
-;; 	 (update-in (nth ps x) [:choices] conj (player-logic)))))
 
 (defn player-decide
   "player decide working"
   [player-structs]
-  (map #(update-in % [:choices] conj (player-logic)) player-structs))
-  
+  (let [past-decisions (get-all-decisions player-structs)]
+    (map #(update-in % [:choices] conj (player-logic (:choices %) past-decisions)) player-structs)))
 
 (defn play-rounds
   "function to play rounds. returns list of player structs"
@@ -93,8 +82,7 @@
 (defn rounds
   "returns list of players with payoffs and choices for rounds"
   [roundnum]
-   (calculate-payoff			; move into (play-round)
-    (play-round roundnum)))
+  (play-round roundnum))
   
 ;; (pushgp 
 ;;   :error-function (fn [program]
