@@ -5,7 +5,7 @@
 (def *popsize* 10)
 (def *rounds-num* 5)
 
-(defstruct player :number :choices :payoffs :capacity)
+(defstruct player :number :choices :payoffs :capacity :code)
 
 ;;; this is where player logic is inserted
 ;;; player decisions is a list of the player's past decisions
@@ -40,8 +40,8 @@
 (defn payoff-sum
   "sum the player decisions with proper weights"
   [decisions capacity]
-  (+ capacity
-     (apply + decisions)))			; integrate other weights 
+  (+ 1 (* 2 (- capacity
+	       (apply + decisions)))))			; integrate other weights 
 
 (defn apply-payoff			
   "add the payoff to each player"
@@ -94,19 +94,19 @@
 	     (for [x (range *popsize*)]
 	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))]))))
 
-(define-registered out
-  (fn [state]
-    (let [astate (stack-ref :auxiliary 0 state)]
-      (->> state
-	   (pop-item :auxiliary)
-	   (push-item 0 :auxiliary)))))
+;; (define-registered out
+;;   (fn [state]
+;;     (let [astate (stack-ref :auxiliary 0 state)]
+;;       (->> state
+;; 	   (pop-item :auxiliary)
+;; 	   (push-item 0 :auxiliary)))))
 
-(defin-registered in
-  (fn [state]
-    (let [astate (stack-ref :auxiliary 0 state)]
-      (->> state
-	   (pop-item :auxiliary)
-	   (push-item 0 :auxiliary)))))
+;; (define-registered in
+;;   (fn [state]
+;;     (let [astate (stack-ref :auxiliary 0 state)]
+;;       (->> state
+;; 	   (pop-item :auxiliary)
+;; 	   (push-item 0 :auxiliary)))))
 
 (defn gp-start
   []
@@ -127,31 +127,6 @@
 ;;;;;;;;;;
 ;; push ;;
 ;;;;;;;;;;
-
-;; (define-registered in 
-;;   (fn [state] (push-item (stack-ref :auxiliary 0 state) :integer state)))
-
-;; (pushgp 
-;;   :error-function (fn [program]
-;;                     (doall
-;;                       (for [input (range 1 6)]
-;;                         (let [state (run-push program
-;;                                       (push-item input :auxiliary
-;;                                         (push-item input :integer
-;;                                           (make-push-state))))
-;;                               top-int (top-item :integer state)]
-;;                           (if (number? top-int)
-;;                             (abs (- top-int (factorial input)))
-;;                             1000000000))))) ;; big penalty, since errors can be big
-;; 	 :atom-generators (concat (registered-for-type :integer)
-;;                      (registered-for-type :exec)
-;;                      (registered-for-type :boolean)
-;;                      (list (fn [] (rand-int 100))
-;;                        'in))
-;; 	 :max-points 100
-;; 	 :population-size 5000
-;; 	 :trivial-geography-radius 10)
-
 
 ;; http://techbehindtech.com/2010/06/25/parsing-xml-in-clojure/
 ;; http://stackoverflow.com/questions/4641964/how-to-use-update-in-in-clojure
