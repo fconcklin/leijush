@@ -13,8 +13,15 @@
 (defn player-logic [player-decisions all-decisions] ; this is where push goes
   "random player logic"
   (rand-int 2)
-  ;; push program
-  ;; registered instructions for throwing player-decisions and all-decisions onto stack
+  )
+
+(defn push-logic
+  "player logic for push"
+  [player-decisions all-decisions push-code]
+  ;; push player-decisions onto stack (which)
+  ;; push all-decisions onto stack (which?)
+  ;; eval push code here
+  ;; sanitize output into 1/0
   )
 
 (defn create-players [popsize capacity]
@@ -108,21 +115,21 @@
 ;; 	   (pop-item :auxiliary)
 ;; 	   (push-item 0 :auxiliary)))))
 
-(defn gp-start
-  []
-  (pushgp
-   :error-function (fn [program]
-		     (map #(- 3000 %) (scores-map))))
-  :atom-generators (concat
-		    (registered-for-type :integer)
-		    (registered-for-type :exec)
-		    (registered-for-type :boolean)
-		    (list
-		     'boolean_and
-		     'boolean_not
-		     'boolean_or))
-  :error-threshold 40
-  :reproduction-simplifications 10)
+;; (defn gp-start
+;;   []
+;;   (pushgp
+;;    :error-function (fn [program]
+;; 		     (map #(- 3000 %) (scores-map))))
+;;   :atom-generators (concat
+;; 		    (registered-for-type :integer)
+;; 		    (registered-for-type :exec)
+;; 		    (registered-for-type :boolean)
+;; 		    (list
+;; 		     'boolean_and
+;; 		     'boolean_not
+;; 		     'boolean_or))
+;;   :error-threshold 40
+;;   :reproduction-simplifications 10)
 
 ;;;;;;;;;;
 ;; push ;;
