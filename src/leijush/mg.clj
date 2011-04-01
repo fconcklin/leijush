@@ -1,28 +1,58 @@
 (ns leijush.mg
   (:use [leijush.core] [clojure.contrib.math]))
 
+;;;;;;;;;;;;;
+;; globals ;;
+;;;;;;;;;;;;;
+
 (def *capacity-list* (filter odd? (range 20)))
 (def *popsize* 10)
 (def *rounds-num* 5)
 
 (defstruct player :number :choices :payoffs :capacity :code)
 
+(def reggie1 @registered-instructions)
+
+
+;;;;;;;;;;
+;; game ;;
+;;;;;;;;;;
+
 ;;; this is where player logic is inserted
 ;;; player decisions is a list of the player's past decisions
 ;;; all-decisions is a list of all past decisions, including the player
-(defn player-logic [player-decisions all-decisions] ; this is where push goes
-  "random player logic"
-  (rand-int 2)
-  )
 
-(defn push-logic
+;;; see strategies section for options
+
+(defn push-wrapper
+  "sanitizes push return"
+  [c]
+  (cond
+   (nil? c) 0
+   (neg? c) 0
+   (odd? c) 0
+   (even? c) 1))
+
+(defn push-strat
   "player logic for push"
-  [player-decisions all-decisions push-code]
+					;  [player-decisions all-decisions push-code]
+  [& args]
   ;; push player-decisions onto stack (which)
   ;; push all-decisions onto stack (which?)
   ;; eval push code here
-  ;; sanitize output into 1/0
-  )
+;  (let [reggie @registered-instructions]
+    (push-wrapper (first (:integer (run-push
+				    (random-code 10 reggie1)
+				    (->>
+				     (make-push-state)
+				     (push-item 1 :integer)
+				     (push-item 0 :integer)))))))
+
+(defn player-logic [player-decisions all-decisions]
+  "random player logic"
+  (rand-int 2)
+;  (push-strat)
+  )				; just for testing until strategies/push implemented
 
 (defn create-players [popsize capacity]
   "create the initial struct of players with empty keys"
@@ -54,7 +84,7 @@
   "add the payoff to each player"
   [payoff player-struct]
   (if (= (last (player-struct :choices)) 0)
-    (update-in player-struct [:payoffs] conj 1)
+    (update-in player-struct [:payoffs] conj 1) ; do these better
     (update-in player-struct [:payoffs] conj payoff)))
 
 (defn calculate-payoff
@@ -99,7 +129,112 @@
   (sort-by last >
 	   (let [data (game)]
 	     (for [x (range *popsize*)]
-	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))]))))
+	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))])))) ; messy
+
+;;;;;;;;;;;;;;;;
+;; strategies ;;
+;;;;;;;;;;;;;;;;
+
+;;; in strategies, don't vary the capacity but keeping same round number
+
+;; (define-registered decision-info-me
+;;   (fn [state]
+;;     (let [astate (stack-ref :auxiliary 0 state)]
+;;       (->> state
+;; 	   (pop-item :auxiliary)
+;; 	   (push-item (right-in astate) :auxiliary)))))
+
+
+
+
+(defn strat-1 [] "entry strategy" 1)
+(defn strat-0 [] "stay-out strategy" 0)
+
+;; probabilistic entry choice rules
+
+;;; linear choice rule
+(defn entry-prob-lin
+  "linear choice rule for probability of agent entry"
+  [strat-1 strat-0]
+  (/ strat-1 (+ strat-1 strat-0)))
+
+;;; exponential choice rule
+(defn entry-prob-exp
+  "exponential choice rule for probability of agent entry"
+  []
+  nil)
+
+;; learning models
+
+;;; simple reinforcement
+(defn entry-lm-sr
+  "returns probabilities for simple reinforcement"
+  []
+  ;; recursive
+  ;; p6 of paper
+  nil)
+
+;;; hypothetical reinforcement
+(defn entry-lm-hr
+  "returns probabilities for hypothetical reinforcement"
+  [all-decisions]			; past-decisions as well?
+  ;; recursive
+  ;; p6 of paper
+  nil)
+
+(defn entry-prob-sfp
+  "stochastic fictitious play"		; combine exp prob and entry hr
+  []
+  nil)
+
+;; stochastic approximation (p.6)
+(defn stoch-approx
+  "calculates expected motion of player's strategy adjustment"
+  []
+  nil)
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; equilibria tests ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(defn eq-nash-pure?
+  "returns whether game is pure Nash equilibrium"
+  []
+  nil)
+
+(defn eq-nash-sme?
+  "returns whether game is symmetric mixed Nash equilibrium"
+  []
+  nil)
+
+(defn eq-nash-asm?
+  []
+  "returns whether game is asymmetric mixed equilibria"
+  nil)
+
+;; random push code
+(random-code 100 (concat @registered-instructions
+                             (list (fn [] (lrand-int 100))
+				   (fn [] (lrand)))))
+
+(run-push '(1 1 integer_add integer_add) (->>
+					  (make-push-state)
+					  (push-item 3 :integer)
+					  (push-item 7 :integer)))
+
+(first (:integer (run-push (random-code 100 @registered-instructions) (->>
+								       (make-push-state)
+								       (push-item 1 :integer)
+								       (push-item 0 :integer)))))
+
+(repeatedly 5 #(push-strat))
+
+(repeatedly 10 #(random-code 10 @registered-instructions)) ; generate random players 
+   
+	     
+;;;;;;;;;;
+;; push ;;
+;;;;;;;;;;
 
 ;; (define-registered out
 ;;   (fn [state]
@@ -139,7 +274,9 @@
 ;; http://stackoverflow.com/questions/4641964/how-to-use-update-in-in-clojure
 ;; above is update-in
 ;; http://java.ociweb.com/mark/clojure/article.html
-;; martin kaiser - efficiently representing populations in genetic programming 
+;; maarten kaijser - efficiently representing populations in genetic programming 
 ;; todo
 ;;; build in changing capacity [just mod total number of rounds or tmi?]
 ;;; build game around it
+;;; jason nobel richard watson -
+;;; juxt - http://richhickey.github.com/clojure/clojure.core-api.html#clojure.core/juxt
