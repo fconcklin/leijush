@@ -40,6 +40,6 @@
                      (list (fn [] (rand-int 100))
                        'in))
 	 :max-points 100
-	 :population-size 5000
+	 :population-size 5000		; size of game players?
 	 :trivial-geography-radius 10)
 

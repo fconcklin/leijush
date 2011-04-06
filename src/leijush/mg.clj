@@ -9,10 +9,13 @@
 (def *popsize* 10)
 (def *rounds-num* 5)
 
+
+
 (defstruct player :number :choices :payoffs :capacity :code)
 
 (def reggie1 @registered-instructions)
 
+(repeatedly *popsize* #(random-code 10 reggie1)) ; generate 10 initial random push players
 
 ;;;;;;;;;;
 ;; game ;;
@@ -46,12 +49,12 @@
 				    (->>
 				     (make-push-state)
 				     (push-item 1 :integer)
-				     (push-item 0 :integer)))))))
+				     (push-item 0 :integer))))))) ; push random code into player struct 
 
 (defn player-logic [player-decisions all-decisions]
   "random player logic"
-  (rand-int 2)
-;  (push-strat)
+;  (rand-int 2)
+  (push-strat)
   )				; just for testing until strategies/push implemented
 
 (defn create-players [popsize capacity]
@@ -113,8 +116,8 @@
   "returns list of players with payoffs and choices in list of rounds"
   []
   (vec (flatten
-   (for [x *capacity-list*]
-    (play-rounds *rounds-num* x)))))
+	(for [x *capacity-list*]
+	  (play-rounds *rounds-num* x)))))
 
 (defn scores-map
   "return this players with their payoff scores for game"
@@ -129,7 +132,7 @@
   (sort-by last >
 	   (let [data (game)]
 	     (for [x (range *popsize*)]
-	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))])))) ; messy
+	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))])))) ; messy, clean w/ flatten 
 
 ;;;;;;;;;;;;;;;;
 ;; strategies ;;
@@ -143,8 +146,6 @@
 ;;       (->> state
 ;; 	   (pop-item :auxiliary)
 ;; 	   (push-item (right-in astate) :auxiliary)))))
-
-
 
 
 (defn strat-1 [] "entry strategy" 1)
@@ -249,6 +250,17 @@
 ;;       (->> state
 ;; 	   (pop-item :auxiliary)
 ;; 	   (push-item 0 :auxiliary)))))
+
+;; populate game with list of player code
+;; sum payoffs for each player
+;; (1/ (player.payoffsum / maxpossible.payoffsum)) * constant multiplier
+;; sum total mean payoff? (for collective)
+
+;; are we selecting for a set of push players? - evolve collectively 
+;; are we selecting for one individual player? - evolve individually
+;; are we going to mix push programs and other strategies? -
+;;;; evolve individually / use beat other strategy as fitness function for collective
+;; population size? for collective vs. individual
 
 ;; (defn gp-start
 ;;   []
