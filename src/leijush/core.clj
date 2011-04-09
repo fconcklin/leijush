@@ -1,6 +1,3 @@
-;; todo
-;;; clj-cassandra
-
 (ns leijush.core
   (:gen-class)
   (:require [clojure.zip :as zip]
@@ -333,6 +330,17 @@ NOT SAFE for invalid positions."
       :no-stack-item
       (nth stack position))))
 
+;; (defn stack-ref
+;;   "Returns the indicated item of the type stack in state. Returns :no-stack-item if called 
+;; on an empty stack. This is a utility, not for use as an instruction in Push programs. Will
+;; cycle through stack if position is past stack depth"
+;;   [type position state]
+;;   (let [stack (type state)]
+;;     (if (empty? stack)
+;;       :no-stack-item
+;;       (cond (<= position (count stack)) (nth stack position)
+;; 	    :else (nth (cycle stack) position)))))
+
 (defn pop-item
   "Returns a copy of the state with the specified stack popped. This is a utility,
 not for use as an instruction in Push programs."
@@ -340,7 +348,7 @@ not for use as an instruction in Push programs."
   (assoc state type (rest (type state))))
 
 (defn registered-for-type
-  "Returns a list of all registered instructions with the given type name as a prefix."
+  "Returns a list of all registered instructions with the given type name as a keyword."
   [type & {:keys [include-randoms] :or {include-randoms true}}]
   (let [for-type (filter #(.startsWith (name %) (name type)) @registered-instructions)]
     (if include-randoms
@@ -1554,7 +1562,7 @@ normal, or :abnormal otherwise."
             (recur (inc iteration) s time-limit)))))))
 
 (defn run-push 
-  "The top level of the push interpreter; calls eval-schush between appropriate code/exec 
+  "The top level of the push interpreter; calls eval-push between appropriate code/exec 
 pushing/popping. The resulting push state will map :termination to :normal if termination was 
 normal, or :abnormal otherwise."
   ([code state]
@@ -1569,7 +1577,6 @@ normal, or :abnormal otherwise."
           (if top-level-pop-code
             (pop-item :code s)
             s))))))
-
 
 ;;;;;;;;;;;;
 ;; pushgp ;;

@@ -5,31 +5,22 @@
 ;; globals ;;
 ;;;;;;;;;;;;;
 
-(def *capacity-list* (filter odd? (range 20)))
+(def *capacity-list* (range 1 20 1))
 (def *popsize* 10)
 (def *rounds-num* 5)
 
-
-
-(defstruct player :number :choices :payoffs :capacity :code)
+(defrecord Player [number choices payoffs capacity code])
+;; (defstruct player :number :choices :payoffs :capacity :code)
 
 (def reggie1 @registered-instructions)
-
-(repeatedly *popsize* #(random-code 10 reggie1)) ; generate 10 initial random push players
 
 ;;;;;;;;;;
 ;; game ;;
 ;;;;;;;;;;
 
-;;; this is where player logic is inserted
-;;; player decisions is a list of the player's past decisions
-;;; all-decisions is a list of all past decisions, including the player
-
-;;; see strategies section for options
-
 (defn push-wrapper
   "sanitizes push return"
-  [c]
+  [c]					; needs to be thought out
   (cond
    (nil? c) 0
    (neg? c) 0
@@ -39,28 +30,31 @@
 (defn push-strat
   "player logic for push"
 					;  [player-decisions all-decisions push-code]
-  [& args]
+  [player-code]
   ;; push player-decisions onto stack (which)
   ;; push all-decisions onto stack (which?)
   ;; eval push code here
-;  (let [reggie @registered-instructions]
-    (push-wrapper (first (:integer (run-push
-				    (random-code 10 reggie1)
+  ;; track execution into db?
+  (push-wrapper (top-item :integer (run-push
+				    player-code
 				    (->>
 				     (make-push-state)
 				     (push-item 1 :integer)
-				     (push-item 0 :integer))))))) ; push random code into player struct 
+				     (push-item 0 :integer))))))
 
-(defn player-logic [player-decisions all-decisions]
-  "random player logic"
+(defn player-logic [player-code player-decisions all-decisions]
+  "player logic"
 ;  (rand-int 2)
-  (push-strat)
-  )				; just for testing until strategies/push implemented
+  (push-strat player-code))
 
-(defn create-players [popsize capacity]
+(defn create-players [popsize capacity pushlist]
   "create the initial struct of players with empty keys"
-  (for [x (range 0 (inc popsize))]
-	(struct-map player :number x :choices [] :payoffs [] :capacity capacity)))
+  (for [x (range 0 popsize)]		; what's faster than for loop?
+    (Person. x [] [] capacity (nth pushlist x))))
+    ;; (struct-map player :number x :choices [] :payoffs [] :capacity capacity
+    ;; 		:code (cond		
+    ;; 		       (< (count pushlist) (inc x)) nil
+    ;; 		       :else (nth pushlist x)))))
 
 (defn get-decisions
   "returns a list of all player decisions for the past round"
@@ -80,7 +74,7 @@
 (defn payoff-sum
   "sum the player decisions with proper weights"
   [decisions capacity]
-  (+ 1 (* 2 (- capacity
+  (+ 1 (* 2 (- capacity			; constants as def (from paper) 
 	       (apply + decisions)))))			; integrate other weights 
 
 (defn apply-payoff			
@@ -100,39 +94,69 @@
   "player decide working"
   [player-structs]
   (let [past-decisions (get-all-decisions player-structs)]
-    (map #(update-in % [:choices] conj (player-logic (:choices %) past-decisions)) player-structs)))
+    (map #(update-in % [:choices] conj (player-logic (:code %) (:choices %) past-decisions)) player-structs)))
 
 (defn play-rounds
   "function to play rounds. returns list of player structs"
-  [roundnum capacity]
+  [roundnum capacity & [pushlist]]
   (cond
-   (zero? roundnum) (create-players *popsize* capacity)
+   (zero? roundnum) (create-players *popsize* capacity pushlist)
    :else (calculate-payoff
 	  (player-decide
-	   (play-rounds (dec roundnum) capacity))
+	   (play-rounds (dec roundnum) capacity pushlist))
 	  capacity)))
 
 (defn game
   "returns list of players with payoffs and choices in list of rounds"
-  []
-  (vec (flatten
+  [pushlist]
+  (vec (flatten				; why is this a vec
 	(for [x *capacity-list*]
-	  (play-rounds *rounds-num* x)))))
+	  (play-rounds *rounds-num* x pushlist)))))
+
+
+
+(repeatedly *popsize* #(random-code 10 @registered-instructions)) 
+
+(defrecord pushcoll [individuals errors total-error history ancestors])
+
+(defn make-pushcoll [& {:keys [individuals errors total-error history ancestors]
+			:or {individuals nil
+			     errors nil
+			     total-error nil
+			     history nil
+			     ancestors nil}}]
+  (pushcoll. individuals errors total-error history ancestors))
+
+
+		     
 
 (defn scores-map
   "return this players with their payoff scores for game"
-  []
-  (let [data (game)]
+  [pushlist]
+  (let [data (game pushlist)]
     (for [x (range *popsize*)]
       (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data))))))
 
+(defn average-payoff
+  "returns average payoff of players in game"
+  [pushlist]
+  (/ (apply + (scores-map pushlist)) *popsize*))
+
+(pushgp
+ :error-function (fn [program]
+		   (- 500 (average-payoff (repeat *popsize* program))))
+ :max-points 100
+ :population-size 50
+ :trivial-geography-radius 10)
+
 (defn winner-map
   "returns the winners of the game sorted by payoffs. Key is player number, value is payoff total"
-  []
+  [pushlist]
   (sort-by last >
-	   (let [data (game)]
+	   (let [data (game pushlist)]
 	     (for [x (range *popsize*)]
 	       [(keyword (str x)) (apply + (map #(apply + (:payoffs %)) (filter #(= (:number %) x) data)))])))) ; messy, clean w/ flatten 
+
 
 ;;;;;;;;;;;;;;;;
 ;; strategies ;;
@@ -261,6 +285,8 @@
 ;; are we going to mix push programs and other strategies? -
 ;;;; evolve individually / use beat other strategy as fitness function for collective
 ;; population size? for collective vs. individual
+
+;; reproduction - within game / across games
 
 ;; (defn gp-start
 ;;   []
